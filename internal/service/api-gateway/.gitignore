@@ -1,0 +1,48 @@
+# Binaries for programs
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Build directories
+build/
+bin/
+
+# Dependency files
+vendor/
+Gopkg.lock
+Gopkg.toml
+go.sum
+
+# Temporary IDE files
+*.swp
+*.swo
+*.bak
+
+# IDE settings and temporary files
+/.idea/
+/.vscode/
+/*.iml
+
+# Go build cache
+/tmp/go-build
+/go-build*/
+
+# Local configuration files
+.env
+*.local
+
+# Go Modules cache
+/pkg/mod/
+/.cache/
+
+# Test caches
+/testdata/
+
+# Output files
+*.out
+
+# OS-specific files
+.DS_Store
+Thumbs.db

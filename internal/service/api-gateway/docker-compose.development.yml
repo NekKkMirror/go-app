@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    ports:
+      - "${API_GATEWAY_ECHO_PORT}:${API_GATEWAY_ECHO_PORT}"
+    volumes:
+      - .:/app
+    environment:
+      - APP_ENV=${API_GATEWAY_APP_ENV}
+
+      - ECHO_HOST=${API_GATEWAY_ECHO_HOST}
+      - ECHO_PORT=${API_GATEWAY_ECHO_PORT}
+      - ECHO_BASE_PATH=${API_GATEWAY_ECHO_BASE_PATH}
+      - ECHO_DEBUG_ERROR_RESPONSE=${API_GATEWAY_ECHO_DEBUG_ERROR_RESPONSE}
+      - ECHO_IGNORE_LOG_URLS=${API_GATEWAY_ECHO_IGNORE_LOG_URLS}
+      - ECHO_TIMEOUT=${API_GATEWAY_ECHO_TIMEOUT}
+      - ECHO_RATE_LIMIT=${API_GATEWAY_ECHO_RATE_LIMIT}

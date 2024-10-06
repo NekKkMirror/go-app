@@ -1,0 +1,56 @@
+SHELL := /bin/bash
+
+GREEN := \033[0;32m
+RED := \033[0;31m
+NC := \033[0m # No Color
+
+.PHONY: test clean
+
+test:
+	@echo "Running tests..."
+	@rm -f summary.log summary.tmp # Remove previous summary and temporary log if exists
+	@touch summary.tmp # Create a master summary log
+	@find . -type d | while read dir; do \
+		if ls $$dir/*_test.go &> /dev/null; then \
+			echo -e "${GREEN}Running tests in $$dir${NC}"; \
+			mkdir -p $$dir; \
+			(cd $$dir && go test -v ./... 2>&1 | tee -a test.log) >> summary.tmp 2>/dev/null; \
+		fi; \
+	done
+	@echo ""
+	@if [ -s summary.tmp ]; then \
+		mv summary.tmp summary.log; \
+	else \
+		rm -f summary.tmp; \
+	fi
+	@echo "Tests completed. Displaying summary:"
+	@echo "----------------------------------"
+	@if [ -f summary.log ]; then \
+		awk '/^=== RUN/ {test=$$0} /^--- PASS/ {print test"\n"$$0} /^--- FAIL/ {print test"\n"$$0}' summary.log | while read -r line; do \
+			if [[ $$line =~ "--- PASS" ]]; then \
+				echo -e "${GREEN}$${line}${NC}"; \
+			elif [[ $$line =~ "--- FAIL" ]]; then \
+				echo -e "${RED}$${line}${NC}"; \
+			else \
+				echo "$$line"; \
+			fi; \
+		done; \
+		passed=$$(grep -c '^--- PASS' summary.log); \
+		failed=$$(grep -c '^--- FAIL' summary.log); \
+		echo "----------------------------------"; \
+		echo -e "${GREEN}Passed tests: $$passed${NC}"; \
+		echo -e "${RED}Failed tests: $$failed${NC}"; \
+	else \
+		echo "No tests found or all tests passed."; \
+	fi
+	@echo "----------------------------------"
+	@echo "See test.log files for detailed logs."
+
+clean:
+	@echo "Cleaning up test.log and summary.log files..."
+	@find . -name "test.log" -exec rm -f {} +
+	@rm -f summary.log summary.tmp
+	@find . -name "summary.tmp" -exec rm -f {} +
+	@echo "All test.log, summary.log and summary.tmp files have been removed."
+
+test-job: test clean
